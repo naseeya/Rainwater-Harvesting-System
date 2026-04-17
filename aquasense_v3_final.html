@@ -1,0 +1,524 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{font-family:var(--font-sans);background:#080f1e;border-radius:16px;overflow:hidden}
+.topbar{background:#0c1628;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.07)}
+.logo{font-size:20px;font-weight:500;color:#e8f4ff;letter-spacing:-.3px}
+.logo span{color:#38bdf8}
+.live-pill{display:flex;align-items:center;gap:7px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.28);border-radius:20px;padding:5px 14px;font-size:12px;color:#4ade80;font-weight:500}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+.ldot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse2 1.4s infinite;flex-shrink:0}
+.tabnav{background:#0c1628;padding:0 24px;display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.tab{padding:14px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.38);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab.active{color:#38bdf8;border-bottom-color:#38bdf8}
+.tab.active.teal{color:#2dd4bf;border-bottom-color:#2dd4bf}
+.tab.active.purple{color:#a78bfa;border-bottom-color:#a78bfa}
+.page{display:none;padding:24px}.page.active{display:block}
+.page-header{margin-bottom:20px}
+.page-title{font-size:19px;font-weight:500;color:#e8f4ff;margin-bottom:5px}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.38);line-height:1.5}
+.panel{background:#0c1628;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px}
+.ptitle{font-size:14px;font-weight:500;color:rgba(255,255,255,0.65);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ptitle::before{content:'';width:3px;height:14px;border-radius:2px;background:#38bdf8;display:inline-block;flex-shrink:0}
+.ptitle.teal::before{background:#2dd4bf}
+.ptitle.purple::before{background:#a78bfa}
+.mrow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.mc{background:#0c1628;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px 14px;text-align:center}
+.mc-lbl{font-size:12px;color:rgba(255,255,255,0.38);margin-bottom:6px}
+.mc-val{font-size:24px;font-weight:500;color:#e8f4ff;line-height:1}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:16px;align-items:start}
+.g2c{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:16px;align-items:start}
+.gauge-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.gauge-row:last-of-type{border-bottom:none}
+.glbl{font-size:13px;color:rgba(255,255,255,0.45);width:90px;flex-shrink:0}
+.gtrack{flex:1;height:9px;background:rgba(255,255,255,0.07);border-radius:5px;overflow:hidden}
+.gfill{height:100%;border-radius:5px;transition:width .7s ease}
+.gval{font-size:14px;font-weight:500;color:#e8f4ff;min-width:40px;text-align:right}
+.badge{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;min-width:52px;text-align:center;flex-shrink:0}
+.bok{background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.28)}
+.bwarn{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.28)}
+.bdanger{background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.28)}
+.abox{margin-top:14px;padding:13px 16px;border-radius:10px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);display:flex;align-items:flex-start;gap:12px}
+.aind{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:2px}
+.atxt{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6}
+.atitle{font-size:13px;font-weight:500;margin-bottom:3px}
+.log-panel{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.log-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05)}
+.log-time{font-size:11px;color:rgba(255,255,255,0.25);min-width:48px}
+.log-txt{font-size:12px;color:rgba(255,255,255,0.5);flex:1}
+.simrow{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.sbtn{font-size:12px;padding:8px 18px;border-radius:9px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s;font-family:var(--font-sans)}
+.sbtn:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,.8)}
+.sbtn.red{border-color:rgba(248,113,113,0.35);color:#f87171}
+.sbtn.red:hover{background:rgba(248,113,113,0.1)}
+.inp-grp{margin-bottom:18px}
+.inp-lbl{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.inp-lbl b{color:#2dd4bf;font-weight:500;font-size:13px}
+input[type=range]{width:100%;accent-color:#2dd4bf;height:6px}
+select{width:100%;padding:10px 13px;background:#080f1e;border:1px solid rgba(255,255,255,0.12);border-radius:9px;color:#e8f4ff;font-size:13px;font-family:var(--font-sans)}
+.res4{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.rcard{background:rgba(45,212,191,0.07);border:1px solid rgba(45,212,191,0.18);border-radius:12px;padding:16px;text-align:center}
+.rval{font-size:22px;font-weight:500;color:#2dd4bf}
+.rlbl{font-size:12px;color:rgba(255,255,255,0.35);margin-top:5px}
+.tankrec{background:rgba(45,212,191,0.06);border:1px solid rgba(45,212,191,0.22);border-radius:12px;padding:18px;text-align:center;margin-top:4px}
+.tankrec-lbl{font-size:12px;color:rgba(45,212,191,0.7);margin-bottom:6px}
+.tankrec-val{font-size:28px;font-weight:500;color:#2dd4bf}
+.tankrec-note{font-size:11px;color:rgba(45,212,191,0.5);margin-top:4px}
+.comp-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;color:rgba(255,255,255,0.55)}
+.comp-item:last-child{border-bottom:none}
+.cnum{width:24px;height:24px;border-radius:50%;background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.28);color:#4ade80;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sdot{width:9px;height:9px;border-radius:50%;background:#a78bfa;flex-shrink:0}
+.rec-hero{background:rgba(56,189,248,0.07);border:2px solid rgba(56,189,248,0.2);border-radius:13px;padding:20px;margin-bottom:12px}
+.rec-tag{font-size:11px;font-weight:500;color:#38bdf8;letter-spacing:.5px;margin-bottom:8px}
+.rec-cost{font-size:18px;font-weight:500;color:#e8f4ff;margin-bottom:4px}
+.rec-tank{font-size:13px;color:rgba(255,255,255,.4)}
+.go-btn{width:100%;padding:12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.28);border-radius:9px;color:#a78bfa;font-size:13px;cursor:pointer;margin-top:14px;font-family:var(--font-sans);transition:background .15s}
+.go-btn:hover{background:rgba(167,139,250,0.18)}
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">AquaSense RWH smart monitoring and design webapp</h2>
+
+<div class="app">
+  <div class="topbar">
+    <div class="logo">Aqua<span>Sense</span></div>
+    <div style="font-size:12px;color:rgba(255,255,255,.25)">Rainwater Harvesting Intelligence Platform</div>
+    <div class="live-pill"><div class="ldot"></div>Live &mdash; Chennai, TN</div>
+  </div>
+  <div class="tabnav">
+    <div class="tab active" id="tab-monitor" onclick="sw('monitor',this,'')">Live monitor</div>
+    <div class="tab" id="tab-calc" onclick="sw('calc',this,'teal')">RWH calculator</div>
+    <div class="tab" id="tab-design" onclick="sw('design',this,'purple')">System designer</div>
+  </div>
+
+  <!-- ===== MONITOR ===== -->
+  <div id="p-monitor" class="page active">
+    <div class="page-header">
+      <div class="page-title">Live sensor monitor</div>
+      <div class="page-sub">Real-time readings from IoT sensors installed in your rainwater harvesting tank — updates every 2.5 seconds. Monitors water level, pH for acid rain detection, dissolved solids, turbidity, and live rainfall intensity.</div>
+    </div>
+    <div class="mrow">
+      <div class="mc"><div class="mc-lbl">Tank level</div><div class="mc-val" id="m-lv">68%</div></div>
+      <div class="mc"><div class="mc-lbl">pH</div><div class="mc-val" id="m-ph">6.2</div></div>
+      <div class="mc"><div class="mc-lbl">TDS (ppm)</div><div class="mc-val" id="m-tds">142</div></div>
+      <div class="mc"><div class="mc-lbl">Turbidity (NTU)</div><div class="mc-val" id="m-turb">3.1</div></div>
+      <div class="mc"><div class="mc-lbl">Rainfall</div><div class="mc-val" id="m-rain">4.0 mm/h</div></div>
+    </div>
+    <div class="g2">
+      <!-- TANK -->
+      <div class="panel" style="display:flex;flex-direction:column;align-items:center;padding:24px 18px">
+        <div class="ptitle" style="align-self:flex-start">Storage tank</div>
+        <svg id="tsv" viewBox="0 0 180 320" width="160" style="overflow:visible;margin:8px 0">
+          <defs>
+            <clipPath id="tc2"><path d="M16,38 Q16,22 32,22 L148,22 Q164,22 164,38 L164,262 Q164,290 140,298 L40,298 Q16,290 16,262 Z"/></clipPath>
+          </defs>
+          <path d="M16,38 Q16,22 32,22 L148,22 Q164,22 164,38 L164,262 Q164,290 140,298 L40,298 Q16,290 16,262 Z" fill="#060d1a" stroke="#1a3252" stroke-width="2.5"/>
+          <g clip-path="url(#tc2)">
+            <rect id="wbg" x="16" y="100" width="148" height="200" fill="#0ea5e9"/>
+            <path id="wv1" fill="rgba(56,189,248,0.55)" d=""/>
+            <path id="wv2" fill="rgba(14,165,233,0.38)" d=""/>
+            <rect x="26" y="110" width="16" height="150" rx="8" fill="rgba(255,255,255,0.06)"/>
+          </g>
+          <line x1="164" y1="80" x2="174" y2="80" stroke="#1a3252" stroke-width="1.5"/>
+          <line x1="164" y1="127" x2="174" y2="127" stroke="#1a3252" stroke-width="1.5"/>
+          <line x1="164" y1="174" x2="174" y2="174" stroke="#1a3252" stroke-width="1.5"/>
+          <line x1="164" y1="221" x2="174" y2="221" stroke="#1a3252" stroke-width="1.5"/>
+          <text x="177" y="84" font-size="10" fill="#38bdf8" font-family="var(--font-sans)" font-weight="500">100%</text>
+          <text x="177" y="131" font-size="10" fill="rgba(56,189,248,.45)" font-family="var(--font-sans)">75%</text>
+          <text x="177" y="178" font-size="10" fill="rgba(56,189,248,.45)" font-family="var(--font-sans)">50%</text>
+          <text x="177" y="225" font-size="10" fill="rgba(56,189,248,.45)" font-family="var(--font-sans)">25%</text>
+          <path d="M16,38 Q16,22 32,22 L148,22 Q164,22 164,38 L164,262 Q164,290 140,298 L40,298 Q16,290 16,262 Z" fill="none" stroke="#38bdf8" stroke-width="1.5" opacity=".5"/>
+          <ellipse cx="90" cy="22" rx="72" ry="12" fill="#0a1828" stroke="#38bdf8" stroke-width="1.5" opacity=".7"/>
+          <rect x="0" y="13" width="22" height="7" rx="3.5" fill="#1a3252" stroke="#38bdf8" stroke-width=".9" opacity=".75"/>
+          <rect x="158" y="258" width="22" height="7" rx="3.5" fill="#1a3252" stroke="#4ade80" stroke-width=".9" opacity=".75"/>
+          <circle cx="20" cy="62" r="4" fill="#1a3252" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+          <circle cx="160" cy="62" r="4" fill="#1a3252" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+          <circle cx="20" cy="248" r="4" fill="#1a3252" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+          <circle cx="160" cy="248" r="4" fill="#1a3252" stroke="#38bdf8" stroke-width="1" opacity=".6"/>
+          <rect x="44" y="148" width="92" height="36" rx="10" fill="#060d1a" stroke="rgba(56,189,248,.3)" stroke-width="1.2"/>
+          <text id="tpct" x="90" y="172" text-anchor="middle" font-size="18" font-weight="500" fill="#38bdf8" font-family="var(--font-sans)">68%</text>
+          <rect x="36" y="296" width="14" height="16" rx="4" fill="#1a3252"/>
+          <rect x="130" y="296" width="14" height="16" rx="4" fill="#1a3252"/>
+        </svg>
+        <div id="tbadge" class="badge bok" style="font-size:12px;padding:5px 16px">Normal</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.28);margin-top:8px">Capacity: 5,000 L</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.2);margin-top:3px">Vol: <span id="tvol">3,400</span> L stored</div>
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="panel">
+          <div class="ptitle">Water quality sensors</div>
+          <div class="gauge-row">
+            <div class="glbl">pH level</div>
+            <div class="gtrack"><div id="g-ph" class="gfill" style="width:62%;background:#4ade80"></div></div>
+            <div id="v-ph" class="gval">6.2</div>
+            <span id="b-ph" class="badge bok">Safe</span>
+          </div>
+          <div class="gauge-row">
+            <div class="glbl">TDS (ppm)</div>
+            <div class="gtrack"><div id="g-tds" class="gfill" style="width:28%;background:#38bdf8"></div></div>
+            <div id="v-tds" class="gval">142</div>
+            <span id="b-tds" class="badge bok">Good</span>
+          </div>
+          <div class="gauge-row">
+            <div class="glbl">Turbidity</div>
+            <div class="gtrack"><div id="g-turb" class="gfill" style="width:15%;background:#38bdf8"></div></div>
+            <div id="v-turb" class="gval">3.1</div>
+            <span id="b-turb" class="badge bok">Clear</span>
+          </div>
+          <div class="gauge-row">
+            <div class="glbl">Rainfall</div>
+            <div class="gtrack"><div id="g-rain" class="gfill" style="width:20%;background:#a78bfa"></div></div>
+            <div id="v-rain" class="gval">4.0</div>
+            <span class="badge" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.28)">mm/h</span>
+          </div>
+          <div id="abox" class="abox">
+            <div id="aind" class="aind" style="background:#4ade80"></div>
+            <div>
+              <div id="atitle" class="atitle" style="color:#4ade80">No acid rain detected</div>
+              <div id="atxt" class="atxt">pH 6.2 — above safe threshold of 5.6. Water is safe to harvest.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle">pH trend (live feed)</div>
+          <canvas id="tc" height="80"></canvas>
+        </div>
+
+        <div class="panel">
+          <div class="ptitle">Event log</div>
+          <div class="log-panel" id="logpanel">
+            <div class="log-item"><div class="log-time">just now</div><div class="log-txt">All sensors nominal — system operating normally</div><span class="badge bok">OK</span></div>
+            <div class="log-item"><div class="log-time">2 min</div><div class="log-txt">Rainfall detected — 4.0 mm/h, tank filling</div><span class="badge" style="background:rgba(56,189,248,.12);color:#38bdf8;border:1px solid rgba(56,189,248,.25)">Info</span></div>
+            <div class="log-item"><div class="log-time">8 min</div><div class="log-txt">System startup — all sensors connected via ESP32</div><span class="badge" style="background:rgba(56,189,248,.12);color:#38bdf8;border:1px solid rgba(56,189,248,.25)">Info</span></div>
+          </div>
+        </div>
+
+        <div class="simrow">
+          <button class="sbtn" onclick="setMode('normal')">Simulate normal rain</button>
+          <button class="sbtn red" onclick="setMode('acid')">Simulate acid rain</button>
+          <button class="sbtn" onclick="setMode('full')">Simulate tank filling</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CALC ===== -->
+  <div id="p-calc" class="page">
+    <div class="page-header">
+      <div class="page-title" style="color:#2dd4bf">RWH potential calculator</div>
+      <div class="page-sub">Estimate how much rainwater your rooftop can harvest every year. Adjust your roof area, local rainfall, and runoff coefficient to see annual yield, how many days it covers, money saved on your water bill, and the ideal tank size to install.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px">
+      <div class="panel">
+        <div class="ptitle teal">Building inputs</div>
+        <div class="inp-grp">
+          <div class="inp-lbl">Rooftop area (m²) <b id="o-area">120</b></div>
+          <input type="range" min="10" max="500" value="120" step="1" id="s-area" oninput="calcUpdate()">
+        </div>
+        <div class="inp-grp">
+          <div class="inp-lbl">Annual rainfall (mm) <b id="o-rain">1400</b></div>
+          <input type="range" min="200" max="3000" value="1400" step="10" id="s-rain" oninput="calcUpdate()">
+        </div>
+        <div class="inp-grp">
+          <div class="inp-lbl">Runoff coefficient <b id="o-run">0.80</b></div>
+          <input type="range" min="0.5" max="0.95" value="0.8" step="0.05" id="s-run" oninput="calcUpdate()">
+        </div>
+        <div class="inp-grp">
+          <div class="inp-lbl">Daily household usage (L/day) <b id="o-use">200</b></div>
+          <input type="range" min="50" max="1000" value="200" step="10" id="s-use" oninput="calcUpdate()">
+        </div>
+        <div style="padding:14px;background:rgba(45,212,191,0.05);border:1px solid rgba(45,212,191,0.13);border-radius:10px;font-size:12px;color:rgba(255,255,255,.38);line-height:1.7">
+          Formula: Harvest = Area × (Rainfall ÷ 1000) × Runoff × 1000<br>
+          Runoff coefficient: 0.80 = concrete roof, 0.70 = tiles, 0.50 = gravel
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <div class="res4">
+          <div class="rcard"><div class="rval" id="r-h">134k L</div><div class="rlbl">Annual harvest</div></div>
+          <div class="rcard"><div class="rval" id="r-d">672</div><div class="rlbl">Days of supply</div></div>
+          <div class="rcard"><div class="rval" id="r-s">₹4,032</div><div class="rlbl">Bill saved / yr</div></div>
+          <div class="rcard"><div class="rval" id="r-c">54 kg</div><div class="rlbl">CO₂ saved</div></div>
+        </div>
+        <div class="panel" style="padding:18px">
+          <div class="ptitle teal">Monthly harvest estimate (litres)</div>
+          <canvas id="mc" height="120"></canvas>
+        </div>
+        <div class="tankrec">
+          <div class="tankrec-lbl">Recommended tank size</div>
+          <div class="tankrec-val" id="r-t">5,000 L</div>
+          <div class="tankrec-note" id="r-tn">Sized to store your peak monthly harvest</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DESIGN ===== -->
+  <div id="p-design" class="page">
+    <div class="page-header">
+      <div class="page-title" style="color:#a78bfa">System designer</div>
+      <div class="page-sub">Get a customised rainwater harvesting system recommendation for your building. Select your building type, intended use, budget, and local pollution level — the tool will recommend the right filtration stack, IoT sensors, tank size, and estimated project cost.</div>
+    </div>
+    <div class="g2c">
+      <div class="panel">
+        <div class="ptitle purple">Your requirements</div>
+        <div class="inp-grp">
+          <div class="inp-lbl" style="margin-bottom:8px">Building type</div>
+          <select id="d-bt" onchange="designUpdate()">
+            <option value="house">Independent house</option>
+            <option value="apartment">Apartment / flat</option>
+            <option value="school">School / institution</option>
+            <option value="farm">Farm / rural</option>
+          </select>
+        </div>
+        <div class="inp-grp" style="margin-top:14px">
+          <div class="inp-lbl" style="margin-bottom:8px">Primary use of water</div>
+          <select id="d-use" onchange="designUpdate()">
+            <option value="domestic">Domestic (drinking &amp; cooking)</option>
+            <option value="irrigation">Garden / irrigation</option>
+            <option value="toilet">Toilet flushing (non-potable)</option>
+            <option value="recharge">Groundwater recharge</option>
+          </select>
+        </div>
+        <div class="inp-grp" style="margin-top:14px">
+          <div class="inp-lbl" style="margin-bottom:8px">Budget range</div>
+          <select id="d-bud" onchange="designUpdate()">
+            <option value="low">Low — under ₹20,000</option>
+            <option value="mid">Medium — ₹20,000 to ₹75,000</option>
+            <option value="high">High — above ₹75,000</option>
+          </select>
+        </div>
+        <div class="inp-grp" style="margin-top:14px">
+          <div class="inp-lbl" style="margin-bottom:8px">Local pollution level</div>
+          <select id="d-pol" onchange="designUpdate()">
+            <option value="low">Low (rural / clean area)</option>
+            <option value="medium">Medium (suburban)</option>
+            <option value="high">High (urban / industrial)</option>
+          </select>
+        </div>
+      </div>
+      <div id="des-out" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+var S={level:68,ph:6.2,tds:142,turb:3.1,rain:4,mode:'normal'};
+var td=[6.1,6.2,6.3,6.2,6.1,6.2,6.2,6.3,6.2,6.2];
+var tChart=null,mChart=null,wT=0;
+var logEntries=[];
+
+function sw(id,el,accent){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active','teal','purple');});
+  document.getElementById('p-'+id).classList.add('active');
+  el.classList.add('active');
+  if(accent)el.classList.add(accent);
+  if(id==='calc'){setTimeout(()=>{initMC();calcUpdate();},80);}
+  if(id==='design')designUpdate();
+}
+function setMode(m){
+  S.mode=m;
+  if(m==='normal'){S.ph=6.2;}
+  addLog(m==='acid'?'Acid rain simulation started — watch pH drop':'Simulation mode: '+m);
+}
+function addLog(txt,type){
+  type=type||'info';
+  var lp=document.getElementById('logpanel');
+  if(!lp)return;
+  var cls=type==='danger'?'bdanger':type==='warn'?'bwarn':'bok';
+  var label=type==='danger'?'Alert':type==='warn'?'Warn':'OK';
+  var item=document.createElement('div');
+  item.className='log-item';
+  item.innerHTML='<div class="log-time">now</div><div class="log-txt">'+txt+'</div><span class="badge '+cls+'">'+label+'</span>';
+  lp.insertBefore(item,lp.firstChild);
+  while(lp.children.length>5)lp.removeChild(lp.lastChild);
+}
+
+function drawTank(lvl){
+  var tH=183,tTop=80,tBot=263;
+  var wTop=tBot-Math.round((lvl/100)*tH);
+  var col=lvl>85?'#f87171':lvl<18?'#fbbf24':'#0ea5e9';
+  var wb=document.getElementById('wbg');
+  if(wb){wb.setAttribute('y',wTop);wb.setAttribute('height',tBot-wTop+5);wb.setAttribute('fill',col);}
+  var tp=document.getElementById('tpct');
+  if(tp){tp.textContent=Math.round(lvl)+'%';tp.setAttribute('fill',lvl>85?'#f87171':lvl<18?'#fbbf24':'#38bdf8');}
+  var vEl=document.getElementById('tvol');
+  if(vEl)vEl.textContent=Math.round(lvl*50).toLocaleString();
+  var tb=document.getElementById('tbadge');
+  if(tb){
+    if(lvl>=90){tb.className='badge bdanger';tb.textContent='Tank full!';}
+    else if(lvl<=15){tb.className='badge bwarn';tb.textContent='Low level';}
+    else{tb.className='badge bok';tb.textContent='Normal';}
+  }
+  drawWaves(wTop);
+}
+function drawWaves(wy){
+  var ww=90,amp=5;
+  var p1='',p2='';
+  for(var pass=0;pass<2;pass++){
+    var offset=pass===0?wT:-wT*0.65;
+    var str='M '+((-3*ww)+offset)+' '+wy;
+    for(var i=0;i<9;i++){
+      var x0=(-3*ww)+offset+i*ww;
+      str+=' Q '+(x0+ww/4)+' '+(wy-(pass===0?amp:amp*.7))+' '+(x0+ww/2)+' '+wy+' Q '+(x0+3*ww/4)+' '+(wy+(pass===0?amp:amp*.7))+' '+(x0+ww)+' '+wy;
+    }
+    str+=' L 164 280 L 16 280 Z';
+    if(pass===0){p1=str;}else{p2=str;}
+  }
+  var w1=document.getElementById('wv1'),w2=document.getElementById('wv2');
+  if(w1)w1.setAttribute('d',p1);
+  if(w2)w2.setAttribute('d',p2);
+}
+function animW(){wT=(wT+0.9)%90;drawWaves(263-Math.round((S.level/100)*183));requestAnimationFrame(animW);}
+
+function updateSensors(){
+  var s=S;
+  if(s.mode==='normal'){
+    s.level=Math.min(97,Math.max(5,s.level+(Math.random()*.5-.18)));
+    s.ph=Math.min(7.8,Math.max(5.8,s.ph+(Math.random()*.05-.025)));
+    s.tds=Math.min(480,Math.max(80,s.tds+(Math.random()*3-1.5)));
+    s.turb=Math.min(18,Math.max(.5,s.turb+(Math.random()*.15-.07)));
+    s.rain=Math.min(18,Math.max(.5,s.rain+(Math.random()*.7-.3)));
+  } else if(s.mode==='acid'){
+    s.ph=Math.max(3.0,s.ph-.1+(Math.random()*.03));
+    s.tds=Math.min(600,s.tds+(Math.random()*7));
+    s.turb=Math.min(35,s.turb+(Math.random()*.4));
+    s.rain=Math.min(40,s.rain+(Math.random()*1.5));
+    s.level=Math.min(97,s.level+.35);
+  } else {
+    s.level=Math.min(99,s.level+.7);
+    s.ph=Math.min(7.5,Math.max(5.9,s.ph+(Math.random()*.04-.02)));
+    s.tds=Math.min(350,Math.max(80,s.tds+(Math.random()*2-1)));
+  }
+  var lv=Math.round(s.level),ph=s.ph.toFixed(1),tds=Math.round(s.tds),turb=s.turb.toFixed(1),rain=s.rain.toFixed(1);
+  setText('m-lv',lv+'%');setText('m-ph',ph);setText('m-tds',tds+'');setText('m-turb',turb);setText('m-rain',rain+' mm/h');
+  drawTank(s.level);
+  var phF=parseFloat(ph);
+  setGauge('g-ph',Math.round((phF/14)*100),phF<5.6?'#f87171':phF<6.5?'#fbbf24':'#4ade80');
+  setText('v-ph',ph);
+  setBadgePh(phF);
+  setGauge('g-tds',Math.round((tds/600)*100),tds>400?'#f87171':tds>250?'#fbbf24':'#38bdf8');
+  setText('v-tds',tds+'');
+  var btds=document.getElementById('b-tds');
+  if(btds){btds.className=tds>400?'badge bdanger':tds>250?'badge bwarn':'badge bok';btds.textContent=tds>400?'High':tds>250?'Moderate':'Good';}
+  setGauge('g-turb',Math.round((parseFloat(turb)/35)*100),parseFloat(turb)>10?'#f87171':parseFloat(turb)>5?'#fbbf24':'#38bdf8');
+  setText('v-turb',turb);
+  var bturb=document.getElementById('b-turb');
+  if(bturb){bturb.className=parseFloat(turb)>10?'badge bdanger':parseFloat(turb)>5?'badge bwarn':'badge bok';bturb.textContent=parseFloat(turb)>10?'Murky':parseFloat(turb)>5?'Hazy':'Clear';}
+  setGauge('g-rain',Math.round((parseFloat(rain)/40)*100),'#a78bfa');
+  setText('v-rain',rain);
+  updateAcidBox(phF,ph);
+  td.shift();td.push(phF);
+  if(tChart){tChart.data.datasets[0].data=[...td];tChart.data.datasets[0].borderColor=phF<5.6?'#f87171':'#38bdf8';tChart.data.datasets[0].backgroundColor=phF<5.6?'rgba(248,113,113,0.07)':'rgba(56,189,248,0.07)';tChart.update('none');}
+  if(phF<5.6&&Math.random()<.25)addLog('ACID RAIN — pH '+ph+' detected, water use suspended','danger');
+  else if(lv>90&&Math.random()<.2)addLog('Tank level above 90% — check overflow valve','warn');
+}
+function setText(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function setGauge(id,pct,col){var e=document.getElementById(id);if(e){e.style.width=pct+'%';e.style.background=col;}}
+function setBadgePh(phF){
+  var b=document.getElementById('b-ph');
+  if(!b)return;
+  if(phF<5.6){b.className='badge bdanger';b.textContent='Acid!';}
+  else if(phF<6.5){b.className='badge bwarn';b.textContent='Watch';}
+  else{b.className='badge bok';b.textContent='Safe';}
+}
+function updateAcidBox(phF,ph){
+  var ab=document.getElementById('abox'),ai=document.getElementById('aind'),at=document.getElementById('atitle'),ax=document.getElementById('atxt');
+  if(!ab)return;
+  if(phF<5.6){
+    ab.style.cssText='margin-top:14px;padding:13px 16px;border-radius:10px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);display:flex;align-items:flex-start;gap:12px';
+    ai.style.background='#f87171';
+    at.style.color='#f87171';at.textContent='ACID RAIN DETECTED';
+    ax.textContent='pH '+ph+' is below safe threshold of 5.6. Stop harvesting and flush the system.';
+  } else {
+    ab.style.cssText='margin-top:14px;padding:13px 16px;border-radius:10px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);display:flex;align-items:flex-start;gap:12px';
+    ai.style.background='#4ade80';
+    at.style.color='#4ade80';at.textContent='No acid rain detected';
+    ax.textContent='pH '+ph+' — above safe threshold of 5.6. Water is safe to harvest.';
+  }
+}
+
+function initTC(){
+  var ctx=document.getElementById('tc');
+  if(!ctx||!window.Chart||tChart)return;
+  tChart=new Chart(ctx,{type:'line',data:{
+    labels:td.map((_,i)=>i===9?'now':'-'+(9-i)+'s'),
+    datasets:[{data:[...td],borderColor:'#38bdf8',borderWidth:2,pointRadius:0,tension:.5,fill:true,backgroundColor:'rgba(56,189,248,0.07)'}]
+  },options:{responsive:true,plugins:{legend:{display:false}},scales:{
+    x:{ticks:{color:'rgba(255,255,255,.3)',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
+    y:{min:3,max:9,ticks:{color:'rgba(255,255,255,.3)',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},title:{display:true,text:'pH',color:'rgba(255,255,255,.3)',font:{size:10}}}
+  }}});
+}
+
+var mBase=[40,30,20,15,30,60,120,140,160,120,60,40];
+function initMC(){
+  var ctx=document.getElementById('mc');
+  if(!ctx||!window.Chart||mChart)return;
+  mChart=new Chart(ctx,{type:'bar',data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    datasets:[{data:mBase.map(r=>Math.round(r/1000*120*0.8*1000)),backgroundColor:'rgba(45,212,191,0.45)',borderColor:'#2dd4bf',borderWidth:1,borderRadius:5}]
+  },options:{responsive:true,plugins:{legend:{display:false}},scales:{
+    x:{ticks:{color:'rgba(255,255,255,.4)',font:{size:11}},grid:{display:false}},
+    y:{ticks:{color:'rgba(255,255,255,.4)',font:{size:11},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v},grid:{color:'rgba(255,255,255,.05)'}}
+  }}});
+}
+
+function calcUpdate(){
+  var area=parseFloat(document.getElementById('s-area').value);
+  var rain=parseFloat(document.getElementById('s-rain').value);
+  var run=parseFloat(document.getElementById('s-run').value);
+  var use=parseFloat(document.getElementById('s-use').value);
+  setText('o-area',Math.round(area));setText('o-rain',Math.round(rain));
+  setText('o-run',run.toFixed(2));setText('o-use',Math.round(use));
+  var h=Math.round(area*(rain/1000)*run*1000);
+  setText('r-h',(h/1000).toFixed(1)+'k L');
+  setText('r-d',Math.round(h/use).toLocaleString());
+  setText('r-s','₹'+Math.round(h*.03).toLocaleString('en-IN'));
+  setText('r-c',Math.round(h*.0004)+' kg');
+  var peak=Math.max(...mBase.map(r=>Math.round(r/1000*area*run*1000)));
+  var ts=Math.ceil(peak/500)*500;
+  setText('r-t',(ts>=1000?(ts/1000).toFixed(0)+'k':ts)+' L');
+  setText('r-tn','Peak month: '+Math.round(peak).toLocaleString()+' L');
+  if(mChart){mChart.data.datasets[0].data=mBase.map(r=>Math.round(r/1000*area*run*1000));mChart.update('none');}
+}
+
+var fR={low:['Mesh pre-filter (300 micron)','Sand filter','Sedimentation tank'],medium:['First-flush diverter','Coarse + fine sand filter','Activated carbon filter','UV steriliser lamp'],high:['First-flush diverter','Multi-media pressure filter','Activated carbon','UV + chlorination dosing','Reverse osmosis (for drinking)']};
+var sR={low:['Ultrasonic level sensor (HC-SR04)','Manual pH test kit (weekly)'],medium:['Ultrasonic level sensor (HC-SR04)','pH sensor module','TDS sensor (EC probe)'],high:['Ultrasonic level sensor','pH sensor module','TDS / EC sensor','Turbidity sensor','Tipping bucket rain gauge','ESP32 WiFi microcontroller','Firebase cloud + this dashboard']};
+var costM={low:'₹8,000 – ₹18,000',mid:'₹22,000 – ₹65,000',high:'₹75,000 – ₹2,00,000+'};
+var tankM={low:'1,000 – 2,000 L',mid:'3,000 – 8,000 L',high:'10,000 – 25,000 L'};
+
+function designUpdate(){
+  var pol=document.getElementById('d-pol').value;
+  var bud=document.getElementById('d-bud').value;
+  var out=document.getElementById('des-out');
+  if(!out)return;
+  var filters=fR[pol],sensors=sR[bud];
+  out.innerHTML=`
+  <div class="rec-hero">
+    <div class="rec-tag">RECOMMENDED SYSTEM</div>
+    <div class="rec-cost">${costM[bud]}</div>
+    <div class="rec-tank">Tank size: ${tankM[bud]}</div>
+  </div>
+  <div class="panel">
+    <div class="ptitle purple">Filtration stack</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:10px">Based on your pollution level — components installed in sequence</div>
+    ${filters.map((f,i)=>`<div class="comp-item"><div class="cnum">${i+1}</div>${f}</div>`).join('')}
+  </div>
+  <div class="panel">
+    <div class="ptitle purple">IoT sensor kit</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:10px">All connected to ESP32 microcontroller via analog/digital pins</div>
+    ${sensors.map(s=>`<div class="comp-item"><div class="sdot"></div>${s}</div>`).join('')}
+    <button class="go-btn" onclick="sendPrompt('Give me the full ESP32 Arduino code and wiring diagram for: ${sensors.slice(0,5).join(', ')}')">Get ESP32 code + wiring diagram ↗</button>
+  </div>`;
+}
+
+setTimeout(()=>{
+  drawTank(68);animW();
+  if(window.Chart)initTC();
+  setInterval(updateSensors,2500);
+  calcUpdate();designUpdate();
+},350);
+</script>
